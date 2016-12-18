@@ -1,4 +1,5 @@
 var harvestDuty = require('duty.harvest');
+var upgradeDuty = require('duty.upgrade');
 
 var roleUpgrader = {
 
@@ -12,17 +13,13 @@ var roleUpgrader = {
             creep.say('upgrading');
         }
         
-        if(creep.room.controller != null) {
-            if(creep.memory.upgrading) {
-                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller);
-                }
-            } else {
-                harvestDuty.run(creep);
+        if(creep.memory.upgrading) {
+            if(!upgradeDuty.run(creep)){
+                creep.say('No controller!');
+                //creep.memory.role = 'harvester';
             }
         }else{
-            creep.say('No controller!');
-            creep.memory.role = 'harvester';
+            harvestDuty.run(creep);
         }
     }
 };

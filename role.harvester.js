@@ -1,4 +1,5 @@
 var harvestDuty = require('duty.harvest');
+var deliverDuty = require('duty.deliver');
 
 var roleHarvester = {
 
@@ -9,20 +10,15 @@ var roleHarvester = {
         }
         if(!creep.memory.deliveringHarvest && creep.carry.energy == creep.carryCapacity) {
             creep.memory.deliveringHarvest = true;
-            creep.say('delivering harvest');
+            creep.say('delivering');
         }
 
         if(creep.memory.deliveringHarvest) {
-            
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION ||
-                                structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-                    }
-            });
+            deliverDuty.run(creep, true);
+        }else{
+            var targets = Game.spawns['Home'].room.find(FIND_SOURCES_ACTIVE);
             for(var i = 0; i < targets.length; i++) {
-                if(creep.transfer(targets[i], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                if(creep.harvest(targets[i]) == ERR_NOT_IN_RANGE) {
                     if(creep.moveTo(targets[i]) == OK) {
                         break;
                     }
@@ -30,8 +26,6 @@ var roleHarvester = {
                     break;
                 }
             }
-        }else{
-            harvestDuty.run(creep);
         }
     }
 };
